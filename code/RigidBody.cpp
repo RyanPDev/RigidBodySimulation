@@ -1,4 +1,3 @@
-
 #include <..\RigidBody.h>
 #pragma section forwardDeclarations
 namespace Cube {

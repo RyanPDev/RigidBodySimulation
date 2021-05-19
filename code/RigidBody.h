@@ -9,7 +9,7 @@
 class RigidBody {
 public:
 	struct State {
-		glm::vec3 com;  // Position of the Cenrer Of Mass
+		glm::vec3 com;  // Position of the Center Of Mass
 		glm::quat rotation;  // Quaternion that represents the current rotation q(t)
 		glm::vec3 linearMomentum;  // P(t)
 		glm::vec3 angularMomentum;  // L(t)
