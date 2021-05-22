@@ -2,10 +2,10 @@
 #include <imgui\imgui_impl_sdl_gl3.h>
 #include <glm\glm.hpp>
 #include <glm\gtc\quaternion.hpp>
-#include <..\RigidBody.h>
-#include <..\Box.h>
-#include <..\Ball.h>
+#include "..\RigidBody.h"
+#include "..\Ball.h"
 #include <iostream>
+#include "..\SemiImplicitEulerSolver.h"
 
 #pragma region forwardDeclarations
 
@@ -102,13 +102,13 @@ void checkPotentialCollisions() {
 	sweep(intervalsLimits, 10);
 }
 
-Box* box;
-Ball* ball;
-/*
+
+
 namespace Gravity {
 
-	RigidBodySolver solver;
-
+	SemiImplicitEulerSolver solver;
+	Box* box;
+	
 	const float G = 0.001f;
 
 	glm::quat getRotationQuaternion(glm::vec3 axis, float angle) {
@@ -117,21 +117,18 @@ namespace Gravity {
 		return glm::normalize(glm::quat(w, v));
 	}
 
-	glm::vec3 getGravityForce(RigidBody* r1, RigidBody* r2) {
-		glm::vec3 direction = r2->getState().com - r1->getState().com;
+	glm::vec3 getGravityForce(RigidBody* r1) {
+		glm::vec3 direction = glm::vec3(0,-9.81,0);
 		float distance = glm::length(direction);
-		float magnitude = G * r1->getMass() * r2->getMass() / distance;
+		float magnitude = G * r1->getMass() / distance;
 		return glm::normalize(direction) * magnitude;
 	}
 
 	void init() {
-		box = new Box(1.f, 1.f, 2.f, 1.f);
-		ball = new Ball(.5f, 1000.f);
+		box = new Box(1.f, 1.f, 1.f, 1.f);
 
-		glm::vec3 boxCom = glm::vec3(4.0f, 5.0f, 0.0f);
-		glm::vec3 ballCom = glm::vec3(0.f, 5.f, 0.f);
-
-		glm::vec3 boxLinearVelocity = glm::vec3(0.f, 0.f, 1.f);
+		glm::vec3 boxCom = glm::vec3(0.0f, 5.0f, 0.0f);
+		glm::vec3 boxLinearVelocity = glm::vec3(0.f, 5.f, 0.f);
 
 		box->initializeState(
 			boxCom,
@@ -139,62 +136,41 @@ namespace Gravity {
 			boxLinearVelocity,
 			glm::vec3(1.0f, 0.0f, 0.0f) // angular velocity
 		);
-		ball->initializeState(glm::vec3(0.f, 5.f, 0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f));
 
 		renderCube = true;
-		renderSphere = true;
 	}
 
 	void update(float dt) {
-		glm::vec3 force = getGravityForce(box, ball);
-		glm::vec3 torques = glm::vec3(0.f);
+	//glm::vec3 force = getGravityForce(box);
+		glm::vec3 force = glm::vec3(0,-1.f,0);
+		glm::vec3 torques = glm::vec3(20.f);
 
-		solver.updateState(box, force, torques, dt);
-		solver.updateState(ball, -force, torques, dt);
+		solver.UpdateState(box, force, torques, dt);
+		box->commitState();
+		//solver.updateState(ball, -force, torques, dt);
 
 		box->draw();
-		ball->draw();
+		//ball->draw();
 	}
 
 	void cleanup() {
 		delete box;
-		delete ball;
 	}
 }
-*/
+
 void PhysicsInit() {
 	renderCube = true;
-	renderSphere = true;
+	
 	checkPotentialCollisions();
 	printBoxes();
 	glm::vec3 rotationAxis = glm::vec3(0, 1, 0);
-	float angle = 3.14f / 4.f; // 45 graus
-
-	/*
-	box = new Box(
-		glm::vec3(0.f, 5.f, 0.f),
-		GetQuaternion(rotationAxis,angle),
-		1.f,
-		glm::vec3(0, 0, 0),
-		glm::vec3(0, 0, 0),
-		1.f, 2.f, 1.f);
-
-	ball = new Ball(
-		glm::vec3(3.f, 5.f, 0.f),
-		GetQuaternion(rotationAxis, angle),
-		1.f,
-		glm::vec3(0, 0, 0),
-		glm::vec3(0, 0, 0),
-		1.f);
-	*/
-	box = new Box(1.f, 2.f, 1.f,1.f);
-	ball = new Ball(1.f, 2.f);
-	
+	float angle = glm::pi<float>() / 4.f; // 45 graus
+	Gravity::init();
+	//box = new Box(1.f, 2.f, 1.f,1.f);
 }
 
 void PhysicsUpdate(float dt) {
-	box->draw();
-	ball->draw();
+	Gravity::update(dt);
 }
 
 void PhysicsCleanup() {

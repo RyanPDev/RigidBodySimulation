@@ -15,5 +15,9 @@ void Box::draw() {
 
 glm::mat3 Box::getInitialInertiaTensor() {
 	// TODO implement
-	return glm::mat3(1.f);
+	return glm::mat3(
+		(1/12)* mass*(pow(height, 2.f) + pow(depth,2.f)),0,0,
+		0, (1 / 12) * mass * (pow(width, 2.f) + pow(depth, 2.f)),0,
+		0,0, (1 / 12) * mass * (pow(width, 2.f) + pow(height, 2.f))
+	);
 }

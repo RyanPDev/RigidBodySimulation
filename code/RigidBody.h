@@ -27,11 +27,11 @@ public:
 	glm::mat3 getInertiaTensor();
 
 	virtual void draw() = 0;
-protected:
 	glm::mat3 getRotationMatrix();
+protected:
 	virtual glm::mat3 getInitialInertiaTensor() = 0;
-private:
 	float mass;
+private:
 	glm::mat3 initialInertiaTensor;
 	State stableState;
 	State state;

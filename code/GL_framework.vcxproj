@@ -141,6 +141,7 @@ xcopy $(ProjectDir)libs\SDL2.dll $(OutDir) /y /d</Command>
     <ClCompile Include="include\imgui\imgui_draw.cpp" />
     <ClCompile Include="include\imgui\imgui_impl_sdl_gl3.cpp" />
     <ClCompile Include="RigidBody.cpp" />
+    <ClCompile Include="SemiImplicitEulerSolver.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Exemple.cpp" />
     <ClCompile Include="src\physics.cpp" />
@@ -151,6 +152,7 @@ xcopy $(ProjectDir)libs\SDL2.dll $(OutDir) /y /d</Command>
     <ClInclude Include="Ball.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="RigidBody.h" />
+    <ClInclude Include="SemiImplicitEulerSolver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
