@@ -26,11 +26,11 @@ void GUI() {
 	bool show = true;
 	ImGui::Begin("Physics Parameters", &show, 0);
 
-	{	
+	{
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);//FrameRate
 
 	}
-	
+
 	ImGui::End();
 }
 
@@ -75,7 +75,7 @@ void printBoxes() {
 void initIntervals(IntervalLimit intervalsLimits[]) {
 	for (int i = 0; i < 5; i++)
 	{
-		intervalsLimits[2*i] = IntervalLimit{ BEGIN, i, &boxes[i].x1 };
+		intervalsLimits[2 * i] = IntervalLimit{ BEGIN, i, &boxes[i].x1 };
 		intervalsLimits[2 * i + 1] = IntervalLimit{ END, i, &boxes[i].x2 };
 	}
 }
@@ -94,7 +94,7 @@ void sweep(IntervalLimit list[], int n)
 }
 
 void checkPotentialCollisions() {
-	IntervalLimit intervalsLimits[2 *5];
+	IntervalLimit intervalsLimits[2 * 5];
 	initIntervals(intervalsLimits);
 	// sort
 	sort(intervalsLimits, 10);
@@ -108,7 +108,7 @@ namespace Gravity {
 
 	SemiImplicitEulerSolver solver;
 	Box* box;
-	
+
 	const float G = 0.001f;
 
 	glm::quat getRotationQuaternion(glm::vec3 axis, float angle) {
@@ -118,7 +118,7 @@ namespace Gravity {
 	}
 
 	glm::vec3 getGravityForce(RigidBody* r1) {
-		glm::vec3 direction = glm::vec3(0,-9.81,0);
+		glm::vec3 direction = glm::vec3(0, -9.81, 0);
 		float distance = glm::length(direction);
 		float magnitude = G * r1->getMass() / distance;
 		return glm::normalize(direction) * magnitude;
@@ -128,22 +128,22 @@ namespace Gravity {
 		box = new Box(1.f, 1.f, 1.f, 1.f);
 
 		glm::vec3 boxCom = glm::vec3(0.0f, 5.0f, 0.0f);
-		glm::vec3 boxLinearVelocity = glm::vec3(0.f, 5.f, 0.f);
+		glm::vec3 boxLinearVelocity = glm::vec3(0.f, 0.f, 0.f);
 
 		box->initializeState(
 			boxCom,
-			getRotationQuaternion(glm::vec3(0.f, 1.f, 0.f), 3.14f / 2.f),
+			getRotationQuaternion(glm::vec3(0.f, 0.f, 0.f), 3.14f / 2.f),
 			boxLinearVelocity,
-			glm::vec3(0.0f, 0.0f, 0.0f) // angular velocity
+			glm::vec3(0.0f, 0.0f, 1.0f) // angular velocity
 		);
 
 		renderCube = true;
 	}
 
 	void update(float dt) {
-	//glm::vec3 force = getGravityForce(box);
-		glm::vec3 force = glm::vec3(0,-4.82f,0);
-		glm::vec3 torques = glm::vec3(20.f);
+		//glm::vec3 force = getGravityForce(box);
+		glm::vec3 force = glm::vec3(0, 0, 0);
+		glm::vec3 torques = glm::vec3(0, 0, 0);
 
 		solver.UpdateState(box, force, torques, dt);
 		box->commitState();
@@ -160,7 +160,7 @@ namespace Gravity {
 
 void PhysicsInit() {
 	renderCube = true;
-	
+
 	checkPotentialCollisions();
 	printBoxes();
 	//glm::vec3 rotationAxis = glm::vec3(0, 1, 0);
@@ -173,4 +173,5 @@ void PhysicsUpdate(float dt) {
 }
 
 void PhysicsCleanup() {
+	Gravity::cleanup();
 }
