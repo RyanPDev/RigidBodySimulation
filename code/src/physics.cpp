@@ -132,9 +132,9 @@ namespace Gravity {
 
 		box->initializeState(
 			boxCom,
-			getRotationQuaternion(glm::vec3(1.f, 1.f, 0.f), 3.14f / 2.f),
+			getRotationQuaternion(glm::vec3(0.f, 1.f, 0.f), 3.14f / 2.f),
 			boxLinearVelocity,
-			glm::vec3(1.0f, 0.0f, 0.0f) // angular velocity
+			glm::vec3(0.0f, 0.0f, 0.0f) // angular velocity
 		);
 
 		renderCube = true;
@@ -142,7 +142,7 @@ namespace Gravity {
 
 	void update(float dt) {
 	//glm::vec3 force = getGravityForce(box);
-		glm::vec3 force = glm::vec3(0,-1.f,0);
+		glm::vec3 force = glm::vec3(0,-4.82f,0);
 		glm::vec3 torques = glm::vec3(20.f);
 
 		solver.UpdateState(box, force, torques, dt);
@@ -163,10 +163,9 @@ void PhysicsInit() {
 	
 	checkPotentialCollisions();
 	printBoxes();
-	glm::vec3 rotationAxis = glm::vec3(0, 1, 0);
-	float angle = glm::pi<float>() / 4.f; // 45 graus
+	//glm::vec3 rotationAxis = glm::vec3(0, 1, 0);
+	//float angle = glm::pi<float>() / 4.f; // 45 graus
 	Gravity::init();
-	//box = new Box(1.f, 2.f, 1.f,1.f);
 }
 
 void PhysicsUpdate(float dt) {

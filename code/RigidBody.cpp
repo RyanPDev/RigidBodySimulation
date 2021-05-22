@@ -53,8 +53,7 @@ glm::mat3 RigidBody::getRotationMatrix() {
 }
 
 glm::mat3 RigidBody::getInertiaTensor() {
-	// TODO implement
-	return glm::mat3(1.f);
+	return glm::mat3_cast(state.rotation) * initialInertiaTensor * glm::transpose(glm::mat3_cast(state.rotation));
 }
 
 #pragma endregion
