@@ -109,7 +109,11 @@ namespace Gravity {
 	SemiImplicitEulerSolver solver;
 	Box* box;
 
+	glm::vec3 force = glm::vec3(0, 0, 0);
+	glm::vec3 torques = glm::vec3(0, 0, 0);
+
 	const float G = 0.001f;
+	const glm::vec3 gravity = glm::vec3(0, 0, 0);
 
 	glm::quat getRotationQuaternion(glm::vec3 axis, float angle) {
 		float w = cos(angle / 2);
@@ -117,40 +121,48 @@ namespace Gravity {
 		return glm::normalize(glm::quat(w, v));
 	}
 
-	glm::vec3 getGravityForce(RigidBody* r1) {
+	glm::vec3 getGravityForce(RigidBody* r1) { //--> DAFUCK is this
 		glm::vec3 direction = glm::vec3(0, -9.81, 0);
 		float distance = glm::length(direction);
 		float magnitude = G * r1->getMass() / distance;
 		return glm::normalize(direction) * magnitude;
 	}
 
+	glm::vec3 getTorqueAtPoint(glm::vec3 force, glm::vec3 point)
+	{
+		return glm::cross(point, force);
+	}
+	void AddRandomForceAndTorque()
+	{
+		force = glm::vec3(1.f, 1.f, 0.f);
+		torques = getTorqueAtPoint(force, glm::vec3(1, 1, 1));
+		
+	}
 	void init() {
 		box = new Box(1.f, 1.f, 1.f, 1.f);
 
 		glm::vec3 boxCom = glm::vec3(0.0f, 5.0f, 0.0f);
-		glm::vec3 boxLinearVelocity = glm::vec3(0.f, 0.f, 0.f);
+		glm::vec3 boxLinearSpeed = glm::vec3(0.f, 0.f, 0.f);
+		glm::vec3 boxAngularSpeed = glm::vec3(0.f, 0.f, 0.f);
 
 		box->initializeState(
 			boxCom,
-			getRotationQuaternion(glm::vec3(0.f, 0.f, 0.f), 3.14f / 2.f),
-			boxLinearVelocity,
-			glm::vec3(0.0f, 0.0f, 1.0f) // angular velocity
+			getRotationQuaternion(glm::vec3(0.f, 0.f, 0.f), 3.14f / 4.f),
+			boxLinearSpeed,
+			boxAngularSpeed // angular velocity
 		);
 
 		renderCube = true;
+
+		AddRandomForceAndTorque();
 	}
 
 	void update(float dt) {
-		//glm::vec3 force = getGravityForce(box);
-		glm::vec3 force = glm::vec3(0, 0, 0);
-		glm::vec3 torques = glm::vec3(0, 0, 0);
+		//force += gravity;
 
-		solver.UpdateState(box, force, torques, dt);
+		solver.UpdateState(box, gravity, torques, dt);
 		box->commitState();
-		//solver.updateState(ball, -force, torques, dt);
-
 		box->draw();
-		//ball->draw();
 	}
 
 	void cleanup() {
@@ -158,11 +170,12 @@ namespace Gravity {
 	}
 }
 
+
 void PhysicsInit() {
 	renderCube = true;
 
 	checkPotentialCollisions();
-	printBoxes();
+	//printBoxes();
 	//glm::vec3 rotationAxis = glm::vec3(0, 1, 0);
 	//float angle = glm::pi<float>() / 4.f; // 45 graus
 	Gravity::init();
