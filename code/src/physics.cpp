@@ -134,9 +134,9 @@ namespace Gravity {
 	}
 	void AddRandomForceAndTorque()
 	{
-		force = glm::vec3(1.f, 1.f, 0.f);
-		torques = getTorqueAtPoint(force, glm::vec3(1, 1, 1));
-		
+		force = glm::vec3(0.f, 1.f, 0.f);
+		torques = getTorqueAtPoint(force, glm::vec3(0.5f, 0.f, 0.5f));
+
 	}
 	void init() {
 		box = new Box(1.f, 1.f, 1.f, 1.f);
