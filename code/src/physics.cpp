@@ -39,68 +39,69 @@ struct BoundingBox {
 	float x1; // x1 < x2
 	float x2;
 };
+//
+//enum IntervalType {
+//	BEGIN, END
+//};
+//
+//struct IntervalLimit {
+//	IntervalType type;
+//	int box;
+//	float* value; // <-- pointer so when we change the box we have the value updated
+//};
+//BoundingBox boxes[] = {
+//	 BoundingBox{0, 0.0f, 1.0f},
+//
+//	 BoundingBox{1, -5.f, 5.f},
+//	 BoundingBox{2, 1.2f, 2.0f},
+//	 BoundingBox{3, 3.0f, 3.7f},
+//	 BoundingBox{4, 3.5f, 4.0f}
+//};
+//void printBoxes() {
+//	for (int i = 0; i < 5; i++) {
+//		std::cout << "B" << i << ": ";
+//		for (int j = 0; j < 50; j++) {
+//			float pos = j / 10.f;
+//			if (pos < boxes[i].x1 || pos > boxes[i].x2) {
+//				std::cout << " ";
+//			}
+//			else {
+//				std::cout << "#";
+//			}
+//		}
+//		std::cout << std::endl;
+//	}
+//}
+//
+//void initIntervals(IntervalLimit intervalsLimits[]) {
+//	for (int i = 0; i < 5; i++)
+//	{
+//		intervalsLimits[2 * i] = IntervalLimit{ BEGIN, i, &boxes[i].x1 };
+//		intervalsLimits[2 * i + 1] = IntervalLimit{ END, i, &boxes[i].x2 };
+//	}
+//}
+//
+//void sort(IntervalLimit list[], int n)
+//{
+//	//insertion sort
+//}
+//
+//void sweep(IntervalLimit list[], int n)
+//{
+//	bool active[5] = { false, false, false, false, false };
+//	// activar caixa 3 --> active[3] = true
+//	// implementar sweep
+//	// print collisions
+//}
 
-enum IntervalType {
-	BEGIN, END
-};
-
-struct IntervalLimit {
-	IntervalType type;
-	int box;
-	float* value; // <-- pointer so when we change the box we have the value updated
-};
-BoundingBox boxes[] = {
-	 BoundingBox{0, 0.0f, 1.0f},
-	 BoundingBox{1, 0.8f, 1.3f},
-	 BoundingBox{2, 1.2f, 2.0f},
-	 BoundingBox{3, 3.0f, 3.7f},
-	 BoundingBox{4, 3.5f, 4.0f}
-};
-void printBoxes() {
-	for (int i = 0; i < 5; i++) {
-		std::cout << "B" << i << ": ";
-		for (int j = 0; j < 50; j++) {
-			float pos = j / 10.f;
-			if (pos < boxes[i].x1 || pos > boxes[i].x2) {
-				std::cout << " ";
-			}
-			else {
-				std::cout << "#";
-			}
-		}
-		std::cout << std::endl;
-	}
-}
-
-void initIntervals(IntervalLimit intervalsLimits[]) {
-	for (int i = 0; i < 5; i++)
-	{
-		intervalsLimits[2 * i] = IntervalLimit{ BEGIN, i, &boxes[i].x1 };
-		intervalsLimits[2 * i + 1] = IntervalLimit{ END, i, &boxes[i].x2 };
-	}
-}
-
-void sort(IntervalLimit list[], int n)
-{
-	//insertion sort
-}
-
-void sweep(IntervalLimit list[], int n)
-{
-	bool active[5] = { false, false, false, false, false };
-	// activar caixa 3 --> active[3] = true
-	// implementar sweep
-	// print collisions
-}
-
-void checkPotentialCollisions() {
-	IntervalLimit intervalsLimits[2 * 5];
-	initIntervals(intervalsLimits);
-	// sort
-	sort(intervalsLimits, 10);
-	// sweep
-	sweep(intervalsLimits, 10);
-}
+//void checkPotentialCollisions() {
+//	IntervalLimit intervalsLimits[2 * 5];
+//	initIntervals(intervalsLimits);
+//	// sort
+//	sort(intervalsLimits, 10);
+//	// sweep
+//	sweep(intervalsLimits, 10);
+//}
 
 
 
@@ -111,7 +112,7 @@ namespace Gravity {
 
 	glm::vec3 force = glm::vec3(0, 0, 0);
 	glm::vec3 torques = glm::vec3(0, 0, 0);
-
+	float forceMagnitud = 10;
 	const float G = 0.001f;
 	const glm::vec3 gravity = glm::vec3(0, 0, 0);
 
@@ -132,22 +133,25 @@ namespace Gravity {
 	{
 		return glm::cross(point, force);
 	}
+
 	void AddRandomForceAndTorque()
 	{
-		force = glm::vec3(0.f, 1.f, 0.f);
-		torques = getTorqueAtPoint(force, glm::vec3(0.5f, 0.f, 0.5f));
-
+		force = glm::normalize(glm::vec3(0.f, 1.f, 0.f));
+		force *= forceMagnitud;
+		glm::vec3 point =  glm::vec3(0.5f, 0.f, 0.5f);
+		torques = getTorqueAtPoint(force, point);
 	}
+
 	void init() {
 		box = new Box(1.f, 1.f, 1.f, 1.f);
 
-		glm::vec3 boxCom = glm::vec3(0.0f, 5.0f, 0.0f);
+		glm::vec3 boxCom = glm::vec3(1.0f, 5.0f, 1.0f);
 		glm::vec3 boxLinearSpeed = glm::vec3(0.f, 0.f, 0.f);
 		glm::vec3 boxAngularSpeed = glm::vec3(0.f, 0.f, 0.f);
 
 		box->initializeState(
 			boxCom,
-			getRotationQuaternion(glm::vec3(0.f, 0.f, 0.f), 3.14f / 4.f),
+			getRotationQuaternion(glm::vec3(0.f, 0.f, 0.f), 3.14f / 2.f),
 			boxLinearSpeed,
 			boxAngularSpeed // angular velocity
 		);
@@ -161,6 +165,7 @@ namespace Gravity {
 		//force += gravity;
 
 		solver.UpdateState(box, gravity, torques, dt);
+		torques = glm::vec3(0, 0, 0);
 		box->commitState();
 		box->draw();
 	}
@@ -174,7 +179,7 @@ namespace Gravity {
 void PhysicsInit() {
 	renderCube = true;
 
-	checkPotentialCollisions();
+	//checkPotentialCollisions();
 	//printBoxes();
 	//glm::vec3 rotationAxis = glm::vec3(0, 1, 0);
 	//float angle = glm::pi<float>() / 4.f; // 45 graus

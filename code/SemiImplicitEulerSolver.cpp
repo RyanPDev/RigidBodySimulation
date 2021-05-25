@@ -18,13 +18,13 @@ void SemiImplicitEulerSolver::UpdateState(Box* box, glm::vec3 force, glm::vec3 t
 	// new Inertia tensor I(t)-1 
 	//	GetInertiaTensor()
 	// Angular velocity w(t)
-	glm::vec3 angularVelocity = box->getInertiaTensor() * newAngularMomentum;
+	glm::vec3 angularVelocity = glm::inverse(box->getInertiaTensor()) * newAngularMomentum;
 	// Rotation R(t+dt)
-	glm::quat newRotation = dt + box->getState().rotation * (0.5f * angularVelocity * box->getState().rotation);
+	glm::quat newRotation = box->getState().rotation + dt * (0.5f * glm::quat(0.f,angularVelocity) * box->getState().rotation);
 
 	RigidBody::State newState = { 
 			newPosition,
-			newRotation,
+			glm::normalize(newRotation),
 			newLinearMomentum,
 			newAngularMomentum
 	};

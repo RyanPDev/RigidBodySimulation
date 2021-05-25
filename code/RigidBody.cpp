@@ -13,8 +13,9 @@ RigidBody::RigidBody(float mass) : mass(mass) {};
 
 void RigidBody::initializeState(glm::vec3 initialPosition, glm::quat initialRotation, glm::vec3 linearSpeed, glm::vec3 angularSpeed) {
 	// Initialize the state outside the constructor to use the virtual method getInitialInertiaTensor
-	initialInertiaTensor = getInitialInertiaTensor();
-	state = {
+	this->initialInertiaTensor = getInitialInertiaTensor();
+	//this->mass = mass;
+	this->state = {
 		initialPosition,
 		initialRotation,
 		mass * linearSpeed,
@@ -53,7 +54,8 @@ glm::mat3 RigidBody::getRotationMatrix() {
 }
 
 glm::mat3 RigidBody::getInertiaTensor() {
-	return getRotationMatrix() * glm::inverse(initialInertiaTensor) * glm::transpose(getRotationMatrix());
+	glm::mat3 rotationMat = getRotationMatrix();
+	return rotationMat * initialInertiaTensor * glm::transpose(rotationMat);
 }
 
 #pragma endregion
