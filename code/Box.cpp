@@ -10,7 +10,7 @@ Box::Box(float width, float height, float depth, float mass)
 	verticesLocalPos[0] = { -width * 0.5f, -height * 0.5f, -depth * 0.5f };  // Izquierda Abajo Detras
 	verticesLocalPos[1] = { -width * 0.5f, height * 0.5f, -depth * 0.5f };	// Izquierda Arriba Detras
 	verticesLocalPos[2] = { width * 0.5f, -height * 0.5f, -depth * 0.5f };	// Derecha Abajo Detras
-	verticesLocalPos[3] = { width * 0.5f, height * 0.5f, -depth * 0.5f };	// Derecha Abajo Arriba ESPAÑA
+	verticesLocalPos[3] = { width * 0.5f, height * 0.5f, -depth * 0.5f };	// Derecha Abajo Arriba
 	verticesLocalPos[4] = { -width * 0.5f, -height * 0.5f, depth * 0.5f };	// Izquierda Abajo Delante 
 	verticesLocalPos[5] = { -width * 0.5f, height * 0.5f, depth * 0.5f };	// Izquierda Arriba Delante
 	verticesLocalPos[6] = { width * 0.5f, -height * 0.5f, depth * 0.5f };	// Derecha Abajo Delante
