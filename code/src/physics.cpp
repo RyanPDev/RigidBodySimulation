@@ -13,22 +13,12 @@ extern bool renderCube;
 extern bool renderSphere;
 #pragma endregion
 
-#pragma region utils
-glm::quat GetQuaternion(glm::vec3 axis, float angle)
-{
-	glm::quat q = glm::quat(0.f, 0.f, 0.f, 0.f);
-	return glm::normalize(q);
-}
-#pragma endregion
-
 bool show_test_window = false;
 void GUI() {
 	bool show = true;
 	ImGui::Begin("Physics Parameters", &show, 0);
-
 	{
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);//FrameRate
-
 	}
 
 	ImGui::End();
@@ -103,10 +93,7 @@ struct BoundingBox {
 //	sweep(intervalsLimits, 10);
 //}
 
-
-
 namespace Gravity {
-
 	SemiImplicitEulerSolver solver;
 	Box* box;
 
@@ -122,12 +109,12 @@ namespace Gravity {
 		return glm::normalize(glm::quat(w, v));
 	}
 
-	glm::vec3 getGravityForce(RigidBody* r1) { //--> DAFUCK is this
-		glm::vec3 direction = glm::vec3(0, -9.81, 0);
-		float distance = glm::length(direction);
-		float magnitude = G * r1->getMass() / distance;
-		return glm::normalize(direction) * magnitude;
-	}
+	//glm::vec3 getGravityForce(RigidBody* r1) { //--> DAFUCK is this
+	//	glm::vec3 direction = glm::vec3(0, -9.81, 0);
+	//	float distance = glm::length(direction);
+	//	float magnitude = G * r1->getMass() / distance;
+	//	return glm::normalize(direction) * magnitude;
+	//}
 
 	glm::vec3 getTorqueAtPoint(glm::vec3 force, glm::vec3 point)
 	{
@@ -145,27 +132,26 @@ namespace Gravity {
 	void init() {
 		box = new Box(1.f, 1.f, 1.f, 1.f);
 
-		glm::vec3 boxCom = glm::vec3(1.0f, 5.0f, 1.0f);
+		glm::vec3 boxCom = glm::vec3(0.0f, 5.f, 0.0f);
 		glm::vec3 boxLinearSpeed = glm::vec3(0.f, 0.f, 0.f);
 		glm::vec3 boxAngularSpeed = glm::vec3(0.f, 0.f, 0.f);
 
 		box->initializeState(
 			boxCom,
-			getRotationQuaternion(glm::vec3(0.f, 0.f, 0.f), 3.14f / 2.f),
+			getRotationQuaternion(glm::vec3(1.f, 1.f, 0.f), 3.14f / 2.f),
 			boxLinearSpeed,
 			boxAngularSpeed // angular velocity
 		);
 
 		renderCube = true;
-
 		AddRandomForceAndTorque();
 	}
 
 	void update(float dt) {
-		//force += gravity;
 
 		solver.UpdateState(box, gravity, torques, dt);
 		torques = glm::vec3(0, 0, 0);
+
 		box->commitState();
 		box->draw();
 	}
