@@ -26,12 +26,12 @@ void Box::draw() {
 	Cube::updateCube(transform);
 }
 
-glm::vec3 Box::GetVertexWorldPos(int idx, glm::vec3 _com, glm::quat _rotation)
+glm::vec3 Box::GetVertexWorldPos(int idx, glm::vec3 _com, glm::quat _rotation) // Obtiene el vertice en coordenadas de mundo
 {
 	return glm::mat3_cast(_rotation) * verticesLocalPos[idx] + _com;
 }
 
-glm::mat3 Box::getInitialInertiaTensor()
+glm::mat3 Box::getInitialInertiaTensor() // Obtiene el tensor de inercia inicial
 {
 	return glm::mat3(
 		mass / 12.f * (pow(height, 2.f) + pow(depth, 2.f)), 0, 0,

@@ -6,6 +6,7 @@ class SemiImplicitEulerSolver
 {
 public:
 	float E = 0.5f;
+	bool useCollisions = true;
 
 private:
 	bool isValidState = true;
@@ -17,7 +18,6 @@ public:
 	void UpdateState(Box*, glm::vec3, glm::vec3,float);
 	float GetDistanceFromPlane(int plane, glm::vec3 pos);
 	glm::vec3 CalculateImpulse(glm::vec3, glm::vec3, glm::vec3, glm::vec3, Box*, glm::vec3, float);
-
 protected:
 	struct WorldBounds
 	{

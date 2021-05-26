@@ -15,20 +15,19 @@ extern bool renderSphere;
 
 #pragma region UI variables
 
-bool playSimulation = false;
-bool useCollisions = true;
-float TIMER{ 15 };
-float resetTimer = 0;
+bool playSimulation = false; // Boleano que controla si la simulacion está haciendose
+float TIMER{ 15 }; // Tiempo maximo de la simulacion	
+float resetTimer = 0; // 
 
 #pragma endregion
 
-namespace Simulation {
+namespace Simulation { // namespace que controla la simulacion
 	SemiImplicitEulerSolver solver;
 	Box* box;
 
 	glm::vec3 force = glm::vec3(0, 0, 0);
 	glm::vec3 torques = glm::vec3(0, 0, 0);
-	float forceMagnitud = 100;
+	float forceMagnitud;
 	const glm::vec3 gravity = glm::vec3(0, -9.81f, 0);
 
 	glm::quat getRotationQuaternion(glm::vec3 axis, float angle) {
@@ -37,19 +36,20 @@ namespace Simulation {
 		return glm::normalize(glm::quat(w, v));
 	}
 
-	glm::vec3 getTorqueAtPoint(glm::vec3 force, glm::vec3 point)
+	glm::vec3 getTorqueAtPoint(glm::vec3 force, glm::vec3 point) // Optiene un torque a partir de un punto y una fuerza
 	{
 		return glm::cross(point, force);
 	}
 
-	void AddRandomForceAndTorque()
+	void AddRandomForceAndTorque() 
 	{
 		force = glm::normalize(glm::vec3((2 * (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) - 1.f, 1.f, (2 * (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) - 1.f));
 		force *= forceMagnitud;
-		glm::vec3 point = glm::vec3(0.5f, 0.f, 0.5f);
+		glm::vec3 point = glm::vec3(((2 * (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) - 1.f) * 0.5f, ((2 * (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) - 1.f) * 0.5f, ((2 * (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) - 1.f) * 0.5f);
 		torques = getTorqueAtPoint(force, point);
 	}
-	void ResetSimulation()
+
+	void ResetSimulation() // Resetea la simulacion
 	{
 		resetTimer = 0;
 
@@ -59,7 +59,7 @@ namespace Simulation {
 
 		box->initializeState(
 			boxCom,
-			getRotationQuaternion(glm::vec3((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)),(static_cast <float> (rand()) / static_cast <float> (RAND_MAX)), (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))), ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)))* 3.14f / 2.f),
+			getRotationQuaternion(glm::vec3((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)), (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)), (static_cast <float> (rand()) / static_cast <float> (RAND_MAX))), ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX))) * 3.14f / 2.f),
 			boxLinearSpeed,
 			boxAngularSpeed // angular velocity
 		);
@@ -68,6 +68,7 @@ namespace Simulation {
 	}
 	void init() {
 		srand(static_cast<unsigned>(time(nullptr)));
+		forceMagnitud = (rand() % 100) + 50;
 		box = new Box(1.f, 1.f, 1.f, 1.f);
 
 		ResetSimulation();
@@ -79,7 +80,7 @@ namespace Simulation {
 		if (playSimulation)
 		{
 			resetTimer += dt;
-			solver.UpdateState(box, gravity, torques, dt);
+			solver.UpdateState(box, gravity, torques, dt); // Llamamos al solver
 			torques = glm::vec3(0, 0, 0);
 			if (resetTimer >= TIMER) ResetSimulation();
 		}
@@ -124,7 +125,7 @@ void GUI() {
 	{
 		ImGui::Indent();
 
-		ImGui::Checkbox("Use collisions", &useCollisions);
+		ImGui::Checkbox("Use collisions", &Simulation::solver.useCollisions);
 
 		ImGui::DragFloat("Elastic coefficient", &Simulation::solver.E, 0.01f, 0.f, 1.f);
 

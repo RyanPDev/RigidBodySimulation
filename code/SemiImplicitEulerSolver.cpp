@@ -36,53 +36,55 @@ void SemiImplicitEulerSolver::UpdateState(Box* box, glm::vec3 force, glm::vec3 t
 				newLinearMomentum,
 				newAngularMomentum
 		};
-
-		for (int p = 0; p < 6; p++)
+		if (useCollisions)
 		{
-			for (int v = 0; v < 8; v++)
-			{
-				// Hay vertices dentro del plano?
-				if ((glm::dot(boxPlanes.norms[p], box->GetVertexWorldPos(v, newState.com, newState.rotation)) + boxPlanes.d[p]) *
-					(glm::dot(boxPlanes.norms[p], box->GetVertexWorldPos(v, box->getState().com, box->getState().rotation)) + boxPlanes.d[p]) <= 0)
-				{
-					hasCollided = true;
-				}
-			}
-			if (!hasCollided)
+			for (int p = 0; p < 6; p++)
 			{
 				for (int v = 0; v < 8; v++)
 				{
-					glm::vec3 auxWpos = box->GetVertexWorldPos(v, newState.com, newState.rotation);
-					if (GetDistanceFromPlane(p, auxWpos) <= threshold)
+					// Hay vertices dentro del plano?
+					if ((glm::dot(boxPlanes.norms[p], box->GetVertexWorldPos(v, newState.com, newState.rotation)) + boxPlanes.d[p]) *
+						(glm::dot(boxPlanes.norms[p], box->GetVertexWorldPos(v, box->getState().com, box->getState().rotation)) + boxPlanes.d[p]) <= 0)
 					{
-						float relativeSpeed = glm::dot(boxPlanes.norms[p], (velocity + glm::cross(angularVelocity, (auxWpos - newState.com))));
-
-						if (relativeSpeed < 0)
-						{
-							isValidState = true;
-							impulse = CalculateImpulse(boxPlanes.norms[p], velocity, angularVelocity, newState.com, box, auxWpos, relativeSpeed);
-							newState.linearMomentum += impulse;
-							newState.angularMomentum += glm::cross((auxWpos - newState.com), impulse);
-							velocity = newState.linearMomentum / box->getMass();
-							angularVelocity = glm::inverse(box->getInertiaTensor()) * newState.angularMomentum;
-						}
-
-						newState.com += 0.001f * boxPlanes.norms[p];
+						hasCollided = true;
 					}
 				}
-				impulse = glm::vec3(0, 0, 0);
+				if (!hasCollided) // Si no hay ningun vertice "dentro" comprovamos si los vertices estan dentro del threshold
+				{
+					for (int v = 0; v < 8; v++)
+					{
+						glm::vec3 auxWpos = box->GetVertexWorldPos(v, newState.com, newState.rotation);
+						if (GetDistanceFromPlane(p, auxWpos) <= threshold)
+						{
+							float relativeSpeed = glm::dot(boxPlanes.norms[p], (velocity + glm::cross(angularVelocity, (auxWpos - newState.com))));
+
+							if (relativeSpeed < 0)
+							{
+								isValidState = true;
+								impulse = CalculateImpulse(boxPlanes.norms[p], velocity, angularVelocity, newState.com, box, auxWpos, relativeSpeed);
+								newState.linearMomentum += impulse;
+								newState.angularMomentum += glm::cross((auxWpos - newState.com), impulse);
+								velocity = newState.linearMomentum / box->getMass();
+								angularVelocity = glm::inverse(box->getInertiaTensor()) * newState.angularMomentum;
+							}
+
+							newState.com += 0.001f * boxPlanes.norms[p];
+						}
+					}
+					impulse = glm::vec3(0, 0, 0);
+				}
 			}
-		}
-		if (hasCollided)
-		{
-			dt = (lastdt + dt) * 0.5f;
-			isValidState = false;
-		}
-		else if (!isValidState)
-		{
-			float aux = dt;
-			dt = (dt - lastdt) * 0.5f;
-			lastdt = aux;
+			if (hasCollided)
+			{
+				dt = (lastdt + dt) * 0.5f;
+				isValidState = false;
+			}
+			else if (!isValidState)
+			{
+				float aux = dt;
+				dt = (dt - lastdt) * 0.5f;
+				lastdt = aux;
+			}
 		}
 		counter++;
 	} while (!isValidState && counter <= 16);
