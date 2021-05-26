@@ -4,19 +4,20 @@
 
 class SemiImplicitEulerSolver
 {
+public:
+	float E = 0.5f;
+
 private:
 	bool isValidState = true;
 	bool hasCollided = false;
-	float threshold = 0.05f;
-	
-	//glm::vec3 position, velocity;
-	//glm::vec3 linearMomentum, angularMomentum;
+	float threshold = 0.1f;
 
 public:
 	SemiImplicitEulerSolver();
 	void UpdateState(Box*, glm::vec3, glm::vec3,float);
 	float GetDistanceFromPlane(int plane, glm::vec3 pos);
-	float GetDirectionFromPlane(int plane, glm::vec3 pos);
+	glm::vec3 CalculateImpulse(glm::vec3, glm::vec3, glm::vec3, glm::vec3, Box*, glm::vec3, float);
+
 protected:
 	struct WorldBounds
 	{

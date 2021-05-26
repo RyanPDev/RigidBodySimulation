@@ -10,6 +10,8 @@ void SemiImplicitEulerSolver::UpdateState(Box* box, glm::vec3 force, glm::vec3 t
 	isValidState = true;
 	RigidBody::State newState;
 	float lastdt = 0;
+	int counter = 0;
+	glm::vec3 impulse = glm::vec3(0, 0, 0);
 	do
 	{
 		hasCollided = false;
@@ -53,10 +55,22 @@ void SemiImplicitEulerSolver::UpdateState(Box* box, glm::vec3 force, glm::vec3 t
 					glm::vec3 auxWpos = box->GetVertexWorldPos(v, newState.com, newState.rotation);
 					if (GetDistanceFromPlane(p, auxWpos) <= threshold)
 					{
-						std::cout << "Vertex: " << auxWpos.x << "," << auxWpos.y << "," << auxWpos.z << " With plane :" << p << ", " << dt << std::endl;
-						isValidState = true;
+						float relativeSpeed = glm::dot(boxPlanes.norms[p], (velocity + glm::cross(angularVelocity, (auxWpos - newState.com))));
+
+						if (relativeSpeed < 0)
+						{
+							isValidState = true;
+							impulse = CalculateImpulse(boxPlanes.norms[p], velocity, angularVelocity, newState.com, box, auxWpos, relativeSpeed);
+							newState.linearMomentum += impulse;
+							newState.angularMomentum += glm::cross((auxWpos - newState.com), impulse);
+							velocity = newState.linearMomentum / box->getMass();
+							angularVelocity = glm::inverse(box->getInertiaTensor()) * newState.angularMomentum;
+						}
+
+						newState.com += 0.001f * boxPlanes.norms[p];
 					}
 				}
+				impulse = glm::vec3(0, 0, 0);
 			}
 		}
 		if (hasCollided)
@@ -67,10 +81,16 @@ void SemiImplicitEulerSolver::UpdateState(Box* box, glm::vec3 force, glm::vec3 t
 		else if (!isValidState)
 		{
 			float aux = dt;
-			(dt -= lastdt) * 0.5f;
+			dt = (dt - lastdt) * 0.5f;
 			lastdt = aux;
 		}
-	} while (!isValidState);
+		counter++;
+	} while (!isValidState && counter <= 16);
+
+	if (counter > 16)
+	{
+		newState.com += 0.01f * glm::normalize(glm::vec3(0, 5, 0) - newState.com);
+	}
 
 	box->setState(newState);
 }
@@ -80,7 +100,10 @@ float SemiImplicitEulerSolver::GetDistanceFromPlane(int plane, glm::vec3 pos)
 	return (glm::abs((boxPlanes.norms[plane].x * pos.x) + (boxPlanes.norms[plane].y * pos.y) + (boxPlanes.norms[plane].z * pos.z) + boxPlanes.d[plane])) /
 		(glm::sqrt(glm::pow(boxPlanes.norms[plane].x, 2) + glm::pow(boxPlanes.norms[plane].y, 2) + glm::pow(boxPlanes.norms[plane].z, 2)));
 }
-float SemiImplicitEulerSolver::GetDirectionFromPlane(int plane, glm::vec3 pos)
+
+glm::vec3 SemiImplicitEulerSolver::CalculateImpulse(glm::vec3 normal, glm::vec3 velocity, glm::vec3 angularVelocity, glm::vec3 _com, Box* box, glm::vec3 vertexPos, float relativeVel)
 {
-	return 0;
+	glm::vec3 ra = (vertexPos - _com);
+
+	return (-(1 + E) * relativeVel) / ((1 / box->getMass()) + glm::dot(glm::cross(glm::inverse(box->getInertiaTensor()) * glm::cross(ra, normal), ra), normal)) * normal;
 }
