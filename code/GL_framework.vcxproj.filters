@@ -45,30 +45,33 @@
     <ClCompile Include="src\Exemple.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RigidBody.cpp">
+    <ClCompile Include="src\Ball.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Box.cpp">
+    <ClCompile Include="src\Box.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Ball.cpp">
+    <ClCompile Include="src\gravity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SemiImplicitEulerSolver.cpp">
+    <ClCompile Include="src\RigidBody.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SemiImplicitEulerSolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RigidBody.h">
+    <ClInclude Include="include\Ball.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Box.h">
+    <ClInclude Include="include\Box.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Ball.h">
+    <ClInclude Include="include\RigidBody.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SemiImplicitEulerSolver.h">
+    <ClInclude Include="include\SemiImplicitEulerSolver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
