@@ -26,9 +26,9 @@ void Box::draw() {
 	Cube::updateCube(transform);
 }
 
-glm::vec3 Box::GetVertexWorldPos(int idx)
+glm::vec3 Box::GetVertexWorldPos(int idx, glm::vec3 _com, glm::quat _rotation)
 {
-	return getRotationMatrix() * verticesLocalPos[idx] + RigidBody::getState().com;
+	return glm::mat3_cast(_rotation) * verticesLocalPos[idx] + _com;
 }
 
 glm::mat3 Box::getInitialInertiaTensor()

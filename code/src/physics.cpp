@@ -101,7 +101,7 @@ namespace Gravity {
 	glm::vec3 torques = glm::vec3(0, 0, 0);
 	float forceMagnitud = 10;
 	const float G = 0.001f;
-	const glm::vec3 gravity = glm::vec3(0, 0, 0);
+	const glm::vec3 gravity = glm::vec3(0, 0, 9);
 
 	glm::quat getRotationQuaternion(glm::vec3 axis, float angle) {
 		float w = cos(angle / 2);
@@ -138,13 +138,13 @@ namespace Gravity {
 
 		box->initializeState(
 			boxCom,
-			getRotationQuaternion(glm::vec3(1.f, 1.f, 0.f), 3.14f / 2.f),
+			getRotationQuaternion(glm::vec3(0.f, 0.f, 0.f), 3.14f / 2.f),
 			boxLinearSpeed,
 			boxAngularSpeed // angular velocity
 		);
 
 		renderCube = true;
-		AddRandomForceAndTorque();
+		//AddRandomForceAndTorque();
 	}
 
 	void update(float dt) {
